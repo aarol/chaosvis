@@ -15,7 +15,7 @@ let stats: Stats
 
 let points: THREE.Points
 const scale = .6
-const numPoints = 1
+const numPoints = 2
 
 let trails: THREE.LineSegments
 const trail_size = 150 * 3
@@ -63,7 +63,8 @@ function initPoints() {
 
 function initTrails() {
 
-  const verts: number[] = new Array(trail_size)
+  const verts: number[] = new Array(trail_size*numPoints)
+  verts.fill(0.0)
   const colors = []
 
   const positions = points.geometry.attributes.position
@@ -94,7 +95,7 @@ function setTrail(
   trail.splice(-3, 3)
 
   for (let k = 0; k < trail.length; k++) {
-    trailPositions.setXYZ(k, trail[3 * k], trail[3 * k + 1], trail[3 * k + 2])
+    trailPositions.setXYZ(i*trail_size + k, trail[3 * k], trail[3 * k + 1], trail[3 * k + 2])
   }
 }
 
@@ -116,7 +117,6 @@ function animate() {
     pointPositions.setXYZ(i, x + o[0], y + o[1], z + o[2])
 
     // trails
-    let d = o[0] + o[1] + o[2]
     setTrail(trailPositions, i, x, y, z, o)
   }
 
