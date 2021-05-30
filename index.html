@@ -12,5 +12,46 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+
+    <!-- SHADERS -->
+    <script type='x-shader/x-vertex' id='vertexshader'>
+
+      attribute vec2 offset;
+
+varying vec2 vOffset;
+
+void main() {
+
+    vOffset = offset;
+
+    gl_PointSize = 25.0;
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+  
+    </script>
+  
+    <script type='x-shader/x-fragment' id='fragmentshader'>
+
+      uniform sampler2D texture;
+uniform vec2 repeat;
+
+varying vec2 vOffset;
+
+void main() {
+
+    vec2 uv = vec2( gl_PointCoord.x, 1.0 - gl_PointCoord.y );
+
+    vec4 tex = texture2D( texture, uv * repeat + vOffset );
+    
+    if ( tex.a < 0.5 ) discard;
+
+    gl_FragColor = tex;
+
+}
+
+
+    </script>
+  
   </body>
 </html>

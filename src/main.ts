@@ -1,7 +1,12 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+// import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+// import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+// import { AfterimagePass } from 'three/examples/jsm/postprocessing/AfterImagePass.js'
+import Stats from 'three/examples/jsm/libs/stats.module.js'
+import hsv2rgb from './util'
 
-const renderer = new THREE.WebGLRenderer({preserveDrawingBuffer: true})
+const renderer = new THREE.WebGLRenderer({ preserveDrawingBuffer: true })
 
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
@@ -10,23 +15,49 @@ const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerH
 camera.position.set(0, 0, 100);
 
 const controls = new OrbitControls(camera, renderer.domElement)
+controls.target.set(0, 0, 25)
 
 const clock = new THREE.Clock()
 
 const scene = new THREE.Scene();
 
-const material = new THREE.LineBasicMaterial({ color: 0xd4d4d4 })
+const stats = Stats()
+document.body.appendChild(stats.dom)
 
-const sphereGeometry = new THREE.SphereGeometry(1)
+const scale = 1
+const numPoints = 2000
 
-const spheres: THREE.Mesh<THREE.SphereGeometry, THREE.LineBasicMaterial>[] = []
-for (let i = 0; i < 25; i++) {
-  const mat = new THREE.LineBasicMaterial({color: i * 10})
-  const sphere = new THREE.Mesh(sphereGeometry, mat)
-  sphere.position.set(1+i/10,1,1)
-  scene.add(sphere)
-  spheres.push(sphere)
+
+let verts = []
+let colors = []
+for (let i = 0; i < numPoints; i++) {
+
+  verts.push(Math.random()* 40, Math.random()* 40, Math.random()* 40)
+  const rgb = hsv2rgb(100, 1, 1)
+  colors.push(rgb[0], rgb[1], rgb[2])
 }
+
+const geometry = new THREE.BufferGeometry()
+geometry.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
+geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
+// // uniforms
+// const uniforms = {
+//   color: { value: new THREE.Color( 0xffff00 ) },
+// };
+
+// // point cloud material
+// const shaderMaterial = new THREE.ShaderMaterial( {
+//   uniforms: uniforms,
+//   vertexShader: document.getElementById( 'vertexshader' )?.textContent!,
+//   fragmentShader: document.getElementById( 'fragmentshader' )?.textContent!,
+//   transparent:  true
+// });
+const material = new THREE.PointsMaterial({ size: scale, vertexColors: true })
+const points = new THREE.Points(geometry, material)
+scene.add(points)
+
+// const gridHelper = new THREE.GridHelper(50, 10);
+// scene.add(gridHelper);
 
 const rho = 28.0
 const sigma = 10.0
@@ -37,24 +68,41 @@ function animate() {
 
   let s = clock.getDelta()
 
-  for (const sphere of spheres) {
-    
-    let v = f(sphere.position, s / 2)
-    
-    sphere.position.add(v)
-    
-    controls.update()
-    
-    renderer.render(scene, camera)
+  let verts = points.geometry.attributes.position
+  for (let i = 0; i < verts.count; i++) {
+    const x = verts.getX(i)
+    const y = verts.getY(i)
+    const z = verts.getZ(i)
+    const o = f([x, y, z], s / 5)
+
+    verts.setXYZ(i, x + o[0], y + o[1], z + o[2])
   }
+
+  verts.needsUpdate = true
+
+  controls.update()
+  stats.update()
+  renderer.render(scene, camera)
 }
 
+stats.begin()
 animate()
 
-function f(current: THREE.Vector3, t: number) {
-  let { x, y, z } = current;
+function f(current: [number, number, number], t: number) {
+  let [x, y, z] = current;
+
   let dx = sigma * (y - x)
   let dy = x * (rho - z) - y
   let dz = x * y - beta * z
-  return new THREE.Vector3(dx * t, dy * t, dz * t)
+  return [dx * t, dy * t, dz * t]
+}
+
+window.addEventListener('resize', onWindowResize, false);
+
+function onWindowResize() {
+
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
