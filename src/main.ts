@@ -15,10 +15,10 @@ let stats: Stats
 
 let points: THREE.Points
 const scale = .6
-const numPoints = 2
+const numPoints = 100
 
 let trails: THREE.LineSegments
-const trail_size = 10 * 3
+const trail_size = 20 * 3
 
 function init() {
   scene = new THREE.Scene();
@@ -117,6 +117,8 @@ function animate() {
     pointPositions.setXYZ(i, x + o[0], y + o[1], z + o[2])
 
     // trails
+    let d = o[0]+o[1]+o[2]
+    if(d>0.08 || d < -0.08)
     setTrail(trailPositions, i, x, y, z, o)
   }
 
