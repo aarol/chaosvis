@@ -18,7 +18,7 @@ const scale = .6
 const numPoints = 2
 
 let trails: THREE.LineSegments
-const trail_size = 150 * 3
+const trail_size = 10 * 3
 
 function init() {
   scene = new THREE.Scene();
@@ -94,8 +94,8 @@ function setTrail(
   trail.unshift(x + o[0], y + o[1], z + o[2])
   trail.splice(-3, 3)
 
-  for (let k = 0; k < trail.length; k++) {
-    trailPositions.setXYZ(i*trail_size + k, trail[3 * k], trail[3 * k + 1], trail[3 * k + 2])
+  for (let k = 0; k < trail.length; k+=3) {
+    trailPositions.setXYZ(i*trail_size/3 + k/3, trail[k], trail[k + 1], trail[k + 2])
   }
 }
 
