@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 // import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 // import { AfterimagePass } from 'three/examples/jsm/postprocessing/AfterImagePass.js'
 import Stats from 'three/examples/jsm/libs/stats.module.js'
+import { GUI, GUIController } from 'three/examples/jsm/libs/dat.gui.module.js'
 import { hsv2rgb, lorenzAttractor } from './util'
 
 let scene: THREE.Scene
@@ -14,11 +15,18 @@ let clock: THREE.Clock
 let stats: Stats
 
 let points: THREE.Points
-const scale = .6
-const numPoints = 100
 
-let trails: THREE.LineSegments
-const trail_size = 20 * 3
+let trails: THREE.Points
+
+const params = {
+  num_points: 250,
+  scale: 1,
+  trail_length: 100*3,
+  trail_size: 0.1,
+  point_color: 0xffffff,
+  trail_color: 0x4444444,
+}
+
 
 function init() {
   scene = new THREE.Scene();
@@ -36,6 +44,16 @@ function init() {
 
   stats = Stats()
 
+  const gui = new GUI({})
+  gui.add(params, 'num_points')
+  .onChange(val => {
+    console.log(val);
+  })
+  gui.add(params, 'scale', 0, 2)
+  gui.add(params, 'trail_length', 0, 1000)
+  gui.addColor(params, 'point_color')
+  gui.addColor(params, 'trail_color')
+
   document.body.appendChild(renderer.domElement)
   document.body.appendChild(stats.dom)
 }
@@ -45,7 +63,7 @@ function initPoints() {
 
   let verts = []
   let colors = []
-  for (let i = 0; i < numPoints; i++) {
+  for (let i = 0; i < params.num_points; i++) {
 
     verts.push(Math.random() * 40, Math.random() * 40, Math.random() * 40)
     const rgb = hsv2rgb(1, 0, 1)
@@ -56,48 +74,31 @@ function initPoints() {
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
   geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
 
-  const material = new THREE.PointsMaterial({ size: scale, vertexColors: true })
+  const material = new THREE.PointsMaterial({ size: params.scale, vertexColors: true })
   points = new THREE.Points(geometry, material)
   scene.add(points)
 }
 
 function initTrails() {
-
-  const verts: number[] = new Array(trail_size*numPoints)
-  verts.fill(0.0)
-  const colors = []
-
-  const positions = points.geometry.attributes.position
-  for (let i = 0; i < positions.count; i++) {
-    verts[i * trail_size] = positions.getX(i)
-    verts[i * trail_size + 1] = positions.getY(i)
-    verts[i * trail_size + 2] = positions.getZ(i)
-    colors.push(255, 255, 255)
-  }
-
   const geometry = new THREE.BufferGeometry()
 
+  const len = params.trail_length * params.num_points
+  const verts = new Array(len)
+  verts.fill(0.0, 0.0, len)
+  const positions = points.geometry.attributes.position
+  for (let i = 0; i < positions.count; i++) {
+    verts[i * params.trail_length] = positions.getX(i)
+    verts[i * params.trail_length + 1] = positions.getY(i)
+    verts[i * params.trail_length + 2] = positions.getZ(i)
+  }
+
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
-  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
-  const material = new THREE.LineBasicMaterial({ color: 'red' })
-  trails = new THREE.LineSegments(geometry, material)
+  const material = new THREE.PointsMaterial({ color: 'grey', size: params.trail_size })
+  trails = new THREE.Points(geometry, material)
   scene.add(trails)
 }
 
-function setTrail(
-  trailPositions: THREE.BufferAttribute | THREE.InterleavedBufferAttribute,
-  i: number, x: number, y: number, z: number,
-  o: any[],
-) {
-  let trail = Array.from(trailPositions.array)
-  trail = trail.slice(i * trail_size, i * trail_size + trail_size)
-  trail.unshift(x + o[0], y + o[1], z + o[2])
-  trail.splice(-3, 3)
-
-  for (let k = 0; k < trail.length; k+=3) {
-    trailPositions.setXYZ(i*trail_size/3 + k/3, trail[k], trail[k + 1], trail[k + 2])
-  }
-}
+let trail_iterator = 0
 
 function animate() {
   requestAnimationFrame(animate)
@@ -114,12 +115,15 @@ function animate() {
     const z = pointPositions.getZ(i)
     const o = lorenzAttractor([x, y, z], s / 5)
 
-    pointPositions.setXYZ(i, x + o[0], y + o[1], z + o[2])
+    const nx = x + o[0]
+    const ny = y + o[1]
+    const nz = z + o[2]
 
-    // trails
-    let d = o[0]+o[1]+o[2]
-    if(d>0.08 || d < -0.08)
-    setTrail(trailPositions, i, x, y, z, o)
+    pointPositions.setXYZ(i, nx, ny, nz)
+
+    trailPositions.setXYZ(trail_iterator, nx, ny, nz)
+    trail_iterator++
+    if (trail_iterator > params.num_points * params.trail_length) trail_iterator = 0
   }
 
   pointPositions.needsUpdate = true
