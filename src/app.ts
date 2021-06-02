@@ -56,7 +56,7 @@ class App {
       this.pointHandler.setPoint(i, v)
       this.trailHandler.setPoint(this.trail_iterator,v)
       this.trail_iterator++
-      if(this.trail_iterator > this.params.num_points!*this.params.trail_length!*3)
+      if(this.trail_iterator > this.params.num_points!*this.params.trail_length!)
       {
         this.trail_iterator = 0
       }

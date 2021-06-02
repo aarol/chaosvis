@@ -11,7 +11,7 @@ export default class TrailHandler {
     const verts = new Array(len)
     let colors = []
     for (let i = 0; i < params.num_points!; i++) {
-      verts.push(0,0,0)
+      verts[i*3]
       const rgb = [255, 255, 255]
       colors.push(rgb[0], rgb[1], rgb[2])
     }
