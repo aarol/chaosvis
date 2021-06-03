@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { Attractor } from './attractors';
+import { lorenzAttractor } from './attractors';
 import Params from './params'
 import PointHandler from './subjects/points';
 import TrailHandler from './subjects/trails';
@@ -13,7 +13,6 @@ class App {
   controls: OrbitControls
   renderer: THREE.WebGLRenderer
   clock: THREE.Clock
-  attractor: Attractor
 
   pointHandler: PointHandler
   trailHandler: TrailHandler
@@ -34,7 +33,6 @@ class App {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.target.set(0, 0, 25)
 
-    this.attractor = new Attractor(params.vars!, params.attractor!)
 
     document.body.appendChild(this.renderer.domElement)
 
@@ -43,7 +41,7 @@ class App {
   }
 
   update() {
-    const dt = this.clock.getDelta()
+    const dt = this.clock.getDelta() / 5
     const positions = this.pointHandler.position
     for (let i = 0; i < positions.count; i++) {
       const v: Vec = {
@@ -51,7 +49,7 @@ class App {
         y: positions.getY(i),
         z: positions.getZ(i),
       }
-      const o = this.attractor.call!(v, dt / 5)
+      const o = lorenzAttractor(v, dt)
 
       v.x += o.x
       v.y += o.y
@@ -93,8 +91,6 @@ class App {
       this.trailHandler.setColor(newParams.trail_color)
     } else if (newParams.trail_size) {
       this.trailHandler.setSize(newParams.trail_size!)
-    } else if (newParams.attractor) {
-      this.attractor.setAttractor(newParams.attractor!)
     }
   }
   dispose() {
