@@ -18,7 +18,7 @@ export default class TrailHandler {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
-    const material = new THREE.PointsMaterial({ size: params.trail_size!})
+    const material = new THREE.PointsMaterial({ size: params.trail_scale!})
     
     this.trails = new THREE.Points(geometry, material)
     

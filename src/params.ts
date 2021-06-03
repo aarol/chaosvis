@@ -3,7 +3,7 @@ type Params = {
   point_scale?: number,
   point_color?: number,
 
-  trail_size?: number,
+  trail_scale?: number,
   trail_color?: number,
   trail_length?: number,
 

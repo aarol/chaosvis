@@ -25,14 +25,15 @@ class App {
     this.clock = new THREE.Clock()
 
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500)
-    this.camera.position.set(0, 0, 100)
+    this.camera.position.set(-80, 40, 0)
 
     this.renderer = new THREE.WebGLRenderer()
     this.renderer.setSize(window.innerWidth, window.innerHeight)
+    this.renderer.setPixelRatio(window.devicePixelRatio)
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.target.set(0, 0, 25)
-
+    // this.scene.add(new THREE.GridHelper(100))
 
     document.body.appendChild(this.renderer.domElement)
 
@@ -89,8 +90,8 @@ class App {
       this.pointHandler.setSize(newParams.point_scale)
     } else if (newParams.trail_color) {
       this.trailHandler.setColor(newParams.trail_color)
-    } else if (newParams.trail_size) {
-      this.trailHandler.setSize(newParams.trail_size!)
+    } else if (newParams.trail_scale) {
+      this.trailHandler.setSize(newParams.trail_scale!)
     }
   }
   dispose() {

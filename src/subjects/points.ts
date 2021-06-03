@@ -9,18 +9,15 @@ class PointHandler {
 
     let verts = []
     let colors = []
-    let multip = 10
+    let multip = 40
     let r = () => Math.random()
+    let offset = 10
 
-    let generatePosition = (offset: number) => {
-      return [offset + r() * multip,offset +  r() * multip,offset +  r() * multip]
+    let generatePosition = () => {
+      return [r() * multip - offset, r() * multip - offset, r() * multip - offset]
     }
     for (let i = 0; i < params.num_points!; i++) {
-      if(Math.random() < 0.5) {
-        verts.push(...generatePosition(-20))
-      } else {
-        verts.push(...generatePosition(10))
-      }
+      verts.push(...generatePosition())
       const rgb = [255, 255, 255]
       colors.push(rgb[0], rgb[1], rgb[2])
     }
