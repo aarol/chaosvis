@@ -2,8 +2,8 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { lorenzAttractor } from './attractors';
 import Params from './params'
-import PointHandler from './subjects/points';
-import TrailHandler from './subjects/trails';
+import PointHandler from './handlers/points';
+import TrailHandler from './handlers/trails';
 import { Vec } from './vec';
 
 class App {
@@ -19,7 +19,7 @@ class App {
 
   trail_iterator = 0
 
-  constructor(params: Params) {
+  constructor(elem: HTMLElement, params: Params) {
     this.params = params
     this.scene = new THREE.Scene()
     this.clock = new THREE.Clock()
@@ -35,7 +35,7 @@ class App {
     this.controls.target.set(0, 0, 25)
     // this.scene.add(new THREE.GridHelper(100))
 
-    document.body.appendChild(this.renderer.domElement)
+    elem.appendChild(this.renderer.domElement)
 
     this.pointHandler = new PointHandler(this.scene, params)
     this.trailHandler = new TrailHandler(this.scene, params)
@@ -81,21 +81,24 @@ class App {
   }
 
   updateParams(newParams: Params) {
-    if (newParams.trail_length) {
+    if (newParams.trail_length !== undefined) {
       this.trailHandler.dispose(this.scene)
-      this.trailHandler = new TrailHandler(this.scene, newParams)
-    } else if (newParams.point_color) {
+      console.log(newParams.trail_length)
+      if(newParams.trail_length > 0) {
+        this.trailHandler = new TrailHandler(this.scene, newParams)
+      }
+    } else if (newParams.point_color !== undefined) {
       this.pointHandler.setColor(newParams.point_color)
-    } else if (newParams.point_scale) {
+    } else if (newParams.point_scale !== undefined) {
       this.pointHandler.setSize(newParams.point_scale)
-    } else if (newParams.trail_color) {
+    } else if (newParams.trail_color !== undefined) {
       this.trailHandler.setColor(newParams.trail_color)
-    } else if (newParams.trail_scale) {
+    } else if (newParams.trail_scale !== undefined) {
       this.trailHandler.setSize(newParams.trail_scale!)
     }
   }
-  dispose() {
-    document.body.removeChild(this.renderer.domElement)
+  dispose(elem: HTMLElement) {
+    elem.removeChild(this.renderer.domElement)
   }
 }
 

@@ -6,7 +6,6 @@ type Params = {
   trail_scale?: number,
   trail_color?: number,
   trail_length?: number,
-
 }
 
 export default Params

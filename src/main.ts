@@ -11,16 +11,19 @@ const params: Params = {
 
   trail_length: 0,
   trail_scale: 0.1,
-  trail_color: 0x4444444,
+  trail_color: 0xffffff,
 }
+
+const element = document.getElementById('app')!
+
 const reset = {
   reset: function () {
-    app.dispose()
-    app = new App(params)
+    app.dispose(element)
+    app = new App(element, params)
   }
 }
 
-let app = new App(params);
+let app = new App(element, params);
 
 // const stats = Stats()
 // document.body.append(stats.domElement)
@@ -30,8 +33,8 @@ const gui = new GUI()
 gui.add(reset, 'reset')
 
 gui.add(params, 'num_points').onChange(_ => {
-  app.dispose()
-  app = new App(params)
+  app.dispose(element)
+  app = new App(element, params)
 })
 
 gui.add(params, 'point_scale', 0.001, 2, 0.001)
