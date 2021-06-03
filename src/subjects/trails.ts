@@ -6,12 +6,11 @@ export default class TrailHandler {
   trails: THREE.Points
 
   constructor(scene: THREE.Scene, params: Params) {
-
     const len = params.trail_length!*3 * params.num_points!
     const verts = new Array(len)
+    verts.fill(0.0)
     let colors = []
     for (let i = 0; i < params.num_points!; i++) {
-      verts[i*3]
       const rgb = [255, 255, 255]
       colors.push(rgb[0], rgb[1], rgb[2])
     }
@@ -44,5 +43,9 @@ export default class TrailHandler {
 
   requestUpdate() {
     this.position.needsUpdate = true
+  }
+
+  dispose(scene: THREE.Scene) {
+    scene.remove(this.trails)
   }
 }

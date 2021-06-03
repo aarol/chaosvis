@@ -1,13 +1,18 @@
+import { Attractors, Vars } from "./attractors"
 import { Vec } from "./vec"
 
+
 type Params = {
+  attractor?: Attractors
   num_points?: number,
   point_scale?: number,
-  trail_length?: number,
-  trail_size?: number,
   point_color?: number,
+
+  trail_size?: number,
   trail_color?: number,
-  attractor?: (v: Vec, dt: number) => Vec,
+  trail_length?: number,
+
+  vars?: Vars
 }
 
 export default Params
