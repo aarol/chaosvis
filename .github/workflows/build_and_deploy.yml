@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install and Build
-        run: |
+        run:
           npm install
           npm run build
       - name: Deploy 🚀
