@@ -1,6 +1,6 @@
 # Chaosvis
 
-## [Hosted on GitHub pages](aarol.github.io/chaosvis/)
+## [Hosted on GitHub pages](https://aarol.github.io/chaosvis/)
 
 Chaosvis visualizes [the Lorenz system](https://en.wikipedia.org/wiki/Lorenz_system). When two points are put close to each other, the result will be drastically different. The Lorenz system/attractor is a [chaotic attractor](https://en.wikipedia.org/wiki/Chaos_theory).
 
@@ -22,4 +22,4 @@ Where dt is the time between frames and σ, ρ, β are parameters. Play around w
 
 ---
 
-### Made with Three.js, dat.GUI and Vite
+### Made with Three.js, dat.gui and Vite
