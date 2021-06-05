@@ -1,6 +1,8 @@
 import * as THREE from 'three'
-import {Params} from '../params'
-import {Vec} from '../vec'
+import { Params } from '../params'
+import { Vec } from '../vec'
+
+import imgUrl from '/disc.png'
 
 class PointHandler {
   points: THREE.Points
@@ -12,6 +14,9 @@ class PointHandler {
     let multip = 40
     let r = () => Math.random()
     let offset = 10
+
+    let textureLoader = new THREE.TextureLoader()
+    let texture = textureLoader.load(imgUrl)
 
     let generatePosition = () => {
       return [r() * multip - offset, r() * multip - offset, r() * multip - offset]
@@ -25,8 +30,15 @@ class PointHandler {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
-    const material = new THREE.PointsMaterial({ size: params.point_scale!})
-    material.depthTest =false
+
+    const material = new THREE.PointsMaterial({
+      size: params.point_scale!,
+      map: texture,
+      alphaTest: 0.5,
+      transparent: true
+    })
+
+    material.depthTest = false
 
     this.points = new THREE.Points(geometry, material)
     this.points.renderOrder = 1
@@ -42,11 +54,11 @@ class PointHandler {
   }
 
   setColor(color: number) {
-    (this.points.material as THREE.PointsMaterial).setValues({color: color})
+    (this.points.material as THREE.PointsMaterial).setValues({ color: color })
   }
 
   setSize(size: number) {
-    (this.points.material as THREE.PointsMaterial).setValues({size: size})
+    (this.points.material as THREE.PointsMaterial).setValues({ size: size })
   }
 
   requestUpdate() {
