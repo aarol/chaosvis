@@ -14,11 +14,11 @@ Where dt is the time between frames and σ, ρ, β are parameters. Play around w
 
 ---
 
-<img src="./resources/white.gif", alt="Preview GIF">
+<img src="./resources/white.gif" alt="Preview GIF">
 
-<img src="./resources/blue.gif", alt="Preview GIF">
+<img src="./resources/blue.gif" alt="Preview GIF">
 
-<img src="./resources/million.png", alt="Preview PNG">
+<img src="./resources/million.png" alt="Preview PNG">
 
 ---
 
