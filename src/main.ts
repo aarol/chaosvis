@@ -30,9 +30,6 @@ const reset = {
 
 let app = new App(element, params);
 
-// const stats = Stats()
-// document.body.append(stats.domElement)
-
 const gui = new GUI()
 
 gui.add(reset, 'reset')

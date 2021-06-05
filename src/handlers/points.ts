@@ -8,9 +8,10 @@ class PointHandler {
 
     let verts = []
     let multip = 40
-    let r = () => Math.random()
     let offset = 10
-
+    
+    let r = () => Math.random()
+    /// returns 3 randomly generated numbers
     let generatePosition = () => {
       return [r() * multip - offset, r() * multip - offset, r() * multip - offset]
     }
@@ -24,11 +25,11 @@ class PointHandler {
     const material = new THREE.PointsMaterial({
       size: params.point_scale!,
       color: params.point_color!,
+      depthTest: false,
     })
-
-    material.depthTest = false
-
+    
     this.points = new THREE.Points(geometry, material)
+    // inserts points in front of trails
     this.points.renderOrder = 1
     scene.add(this.points)
   }
