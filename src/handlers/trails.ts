@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import Params from '../params'
+import {Params} from '../params'
 import {Vec} from '../vec'
 
 export default class TrailHandler {
