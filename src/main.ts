@@ -1,8 +1,6 @@
 import App from './app'
-import { Params } from './params';
-
+import { Params } from './types';
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
-// import Stats from 'three/examples/jsm/libs/stats.module';
 
 const params: Params = {
   num_points: 2500,
@@ -39,14 +37,14 @@ const gui = new GUI()
 
 gui.add(reset, 'reset')
 
+gui.add(params, 'time_scale', 0, 2, 0.001)
+.onChange(v => {
+  app.updateParams({time_scale: v})
+})
+
 gui.add(params, 'num_points').onChange(_ => {
   app.dispose(element)
   app = new App(element, params)
-})
-
-gui.add(params, 'time_scale', 0, 2)
-.onChange(v => {
-  app.updateParams({time_scale: v})
 })
 
 gui.add(params, 'point_scale', 0.001, 2, 0.001)
@@ -112,5 +110,4 @@ function resizeCanvas() {
 function render() {
   requestAnimationFrame(render);
   app.update();
-  // stats.update()
 }

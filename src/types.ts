@@ -1,3 +1,9 @@
+type Vec = {
+  x: number,
+  y: number, 
+  z: number,
+}
+
 type Vars = {
   sigma: number,
   rho: number,
@@ -17,4 +23,4 @@ type Params = {
   vars?: Vars,
 }
 
-export { Params, Vars }
+export { Params, Vars, Vec }

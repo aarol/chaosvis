@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { lorenzAttractor } from './attractors';
-import {Params} from './params'
+import { lorenzAttractor } from './attractor';
+import { Params } from './types'
 import PointHandler from './handlers/points';
 import TrailHandler from './handlers/trails';
-import { Vec } from './vec';
+import { Vec } from './types';
 
 class App {
   params: Params
@@ -84,7 +84,7 @@ class App {
     if (newParams.trail_length !== undefined) {
       this.trailHandler.dispose(this.scene)
       console.log(newParams.trail_length)
-      if(newParams.trail_length > 0) {
+      if (newParams.trail_length > 0) {
         this.trailHandler = new TrailHandler(this.scene, newParams)
       }
     } else if (newParams.point_color !== undefined) {

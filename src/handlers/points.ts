@@ -1,8 +1,5 @@
 import * as THREE from 'three'
-import { Params } from '../params'
-import { Vec } from '../vec'
-
-import imgUrl from '/disc.png'
+import { Params,Vec } from '../types'
 
 class PointHandler {
   points: THREE.Points
@@ -10,32 +7,23 @@ class PointHandler {
   constructor(scene: THREE.Scene, params: Params) {
 
     let verts = []
-    let colors = []
     let multip = 40
     let r = () => Math.random()
     let offset = 10
-
-    let textureLoader = new THREE.TextureLoader()
-    let texture = textureLoader.load(imgUrl)
 
     let generatePosition = () => {
       return [r() * multip - offset, r() * multip - offset, r() * multip - offset]
     }
     for (let i = 0; i < params.num_points!; i++) {
       verts.push(...generatePosition())
-      const rgb = [255, 255, 255]
-      colors.push(rgb[0], rgb[1], rgb[2])
     }
 
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
-    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
 
     const material = new THREE.PointsMaterial({
       size: params.point_scale!,
-      map: texture,
-      alphaTest: 0.5,
-      transparent: true
+      color: params.point_color!,
     })
 
     material.depthTest = false

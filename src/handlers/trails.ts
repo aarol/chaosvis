@@ -1,6 +1,5 @@
 import * as THREE from 'three'
-import {Params} from '../params'
-import {Vec} from '../vec'
+import {Params,Vec} from '../types'
 
 export default class TrailHandler {
   trails: THREE.Points
@@ -9,16 +8,13 @@ export default class TrailHandler {
     const len = params.trail_length!*3 * params.num_points!
     const verts = new Array(len)
     verts.fill(0.0)
-    let colors = []
-    for (let i = 0; i < params.num_points!; i++) {
-      const rgb = [255, 255, 255]
-      colors.push(rgb[0], rgb[1], rgb[2])
-    }
 
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
-    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
-    const material = new THREE.PointsMaterial({ size: params.trail_scale!})
+    const material = new THREE.PointsMaterial({
+       size: params.trail_scale!,
+    color: params.trail_color!,
+  })
     
     this.trails = new THREE.Points(geometry, material)
     

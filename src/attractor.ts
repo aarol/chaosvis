@@ -1,5 +1,4 @@
-import { Vars } from "./params";
-import { Vec } from "./vec";
+import { Vars,Vec } from "./types";
 
 function lorenzAttractor({ sigma, rho, beta }: Vars, { x, y, z }: Vec, t: number): Vec {
   let dx = sigma * (y - x)
