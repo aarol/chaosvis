@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { lorenzAttractor } from './attractor';
-import { Params } from './types'
 import PointHandler from './handlers/points';
 import TrailHandler from './handlers/trails';
-import { Vec } from './types';
+import { Params } from './main';
+
+
 
 class App {
   params: Params
@@ -19,8 +19,8 @@ class App {
 
   trail_iterator = 0
 
-  constructor(elem: HTMLElement, params: Params) {
-    this.params = params
+  constructor(elem: HTMLElement, initial: Params) {
+    this.params = initial
     this.scene = new THREE.Scene()
     this.clock = new THREE.Clock()
 
@@ -38,51 +38,80 @@ class App {
 
     elem.appendChild(this.renderer.domElement)
 
-    this.pointHandler = new PointHandler(this.scene, params)
-    this.trailHandler = new TrailHandler(this.scene, params)
+    this.pointHandler = new PointHandler(this.scene, initial)
+    this.trailHandler = new TrailHandler(this.scene, initial)
+
+    window.onfocus = () => this.clock.start()
+    window.onblur = () => this.clock.stop()
   }
 
   update() {
+    if (!this.params.time_scale || !this.clock.running) {
+      return
+    }
     // time between frames, usually small like 0.002
-    const dt = this.clock.getDelta() / 5 * (this.params.time_scale!)
+    const dt = this.clock.getDelta() / 5 * (this.params.time_scale)
+
+    const { sigma, rho, beta } = this.params.vars
     const positions = this.pointHandler.position
     // loop through every point
     for (let i = 0; i < positions.count; i++) {
-      const v: Vec = {
-        x: positions.getX(i),
-        y: positions.getY(i),
-        z: positions.getZ(i),
-      }
-      const o = lorenzAttractor(this.params.vars!, v, dt)
+      let x = positions.getX(i)
+      let y = positions.getY(i)
+      let z = positions.getZ(i)
 
-      // increment point position by formula
-      v.x += o.x
-      v.y += o.y
-      v.z += o.z
+      let dx = sigma * (y - x)
+      let dy = x * (rho - z) - y
+      let dz = x * y - beta * z
 
-      this.pointHandler.setPoint(i, v)
+      x += dx * dt
+      y += dy * dt
+      z += dz * dt
+
+      this.pointHandler.setPoint(i, x, y, z)
 
       // if trail enabled
       if (this.params.trail_length! > 0) {
         // set current point to trail
-        this.trailHandler.setPoint(this.trail_iterator, v)
+        this.trailHandler.setPoint(this.trail_iterator, x, y, z)
         // this is incremented every frame * num_points
         this.trail_iterator++
 
-        // if iterator out of bounds
-        if (this.trail_iterator > this.params.num_points! * this.params.trail_length!) {
-          this.trail_iterator = 0
-        }
+        this.trail_iterator %= this.params.num_points * this.params.trail_length
       }
     }
+
     this.pointHandler.requestUpdate()
-    if(this.params.trail_length! > 0) {
+    if (this.params.trail_length! > 0) {
       // only update trail if necessary
-      this.trailHandler.requestUpdate()
+      this.trailHandler.update()
     }
 
     this.controls.update()
     this.renderer.render(this.scene, this.camera)
+  }
+
+  onParams(key: keyof Params, value: number) {
+    switch (key) {
+      case "num_points":
+        throw "TODO"
+      case "point_color":
+        this.pointHandler.setColor(value)
+        break
+      case "point_scale":
+        this.pointHandler.setSize(value)
+        break
+      case "time_scale":
+        break
+      case "trail_color":
+        this.trailHandler.setValue({ color: value })
+        break
+      case "trail_length":
+        throw "TODO"
+      case "trail_scale":
+        this.trailHandler.setValue({ size: value })
+        break
+    }
   }
 
   onWindowResize() {
@@ -90,33 +119,6 @@ class App {
     this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-
-  /// called from main, handles gui input changes
-  updateParams(newParams: Params) {
-    // set trail length
-    if (newParams.trail_length !== undefined) {
-      this.trailHandler.dispose(this.scene)
-      if (newParams.trail_length > 0) {
-        // if trail has length
-        this.trailHandler = new TrailHandler(this.scene, newParams)
-      }
-      // set point color
-    } else if (newParams.point_color !== undefined) {
-      this.pointHandler.setColor(newParams.point_color)
-      // set point scale
-    } else if (newParams.point_scale !== undefined) {
-      this.pointHandler.setSize(newParams.point_scale)
-      // set trail color
-    } else if (newParams.trail_color !== undefined) {
-      this.trailHandler.setColor(newParams.trail_color)
-      // set trial scale
-    } else if (newParams.trail_scale !== undefined) {
-      this.trailHandler.setSize(newParams.trail_scale!)
-      // set time scale
-    } else if (newParams.time_scale !== undefined) {
-      this.params.time_scale = newParams.time_scale
-    }
   }
 
   dispose(elem: HTMLElement) {

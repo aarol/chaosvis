@@ -26,6 +26,4 @@ Where x,y,z is the current position, dt is the time between frames and σ, ρ, �
 
 Made with [Three.js](https://threejs.org/), [dat.gui](https://github.com/dataarts/dat.gui) and [Vite](https://vitejs.dev/)
 
-[Inspiration came from this amazing video by Orfeas Liossatos](https://youtu.be/idpOunnpKTo)
-
-Issues and pull requests are welcome 🤗
+[Inspiration came from this video by Orfeas Liossatos](https://youtu.be/idpOunnpKTo)

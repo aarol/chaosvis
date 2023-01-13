@@ -1,39 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chaosvis</title>
-    <style>
-      body { margin: 0; }
-      #app {
-        position: relative;
-      }
-      canvas {
-        position: absolute;
-        display: block;
-      }
-      #ghoverlay {
-        position: absolute;
-        display: block;
-        right: 10px;
-        bottom: 10px;
-      }
-      img.ghlogo {
-        width: 20;
-        height: auto;
-        filter: invert()
-      }
-    </style>
-  </head>
-  <body>
-    <div id="app"></div>
-    <div id="ghoverlay">
-      <a href="https://github.com/aarol/chaosvis">
-        <img class="ghlogo" src="/octicon.svg" alt="github logo" title="on GitHub" width="30">
-      </a>
-    </div>
-    <script type="module" src="/src/main.ts"></script>  
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chaosvis</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+    }
+
+    #app {
+      position: relative;
+    }
+
+    canvas {
+      position: absolute;
+      display: block;
+    }
+
+    #ghoverlay {
+      position: absolute;
+      display: block;
+      right: 10px;
+      bottom: 10px;
+    }
+
+    img.ghlogo {
+      width: 20;
+      height: auto;
+      filter: invert()
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <div id="ghoverlay">
+    <a href="https://github.com/aarol/chaosvis">
+      <img class="ghlogo" src="/octicon.svg" alt="github logo" title="on GitHub" width="30">
+    </a>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>

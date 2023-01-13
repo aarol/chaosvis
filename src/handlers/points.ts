@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { Params,Vec } from '../types'
+import { Params } from '../main'
 
 class PointHandler {
   points: THREE.Points
@@ -9,7 +9,7 @@ class PointHandler {
     let verts = []
     let multip = 40
     let offset = 10
-    
+
     let r = () => Math.random()
     /// returns 3 randomly generated numbers
     let generatePosition = () => {
@@ -27,7 +27,7 @@ class PointHandler {
       color: params.point_color!,
       depthTest: false,
     })
-    
+
     this.points = new THREE.Points(geometry, material)
     // inserts points in front of trails
     this.points.renderOrder = 1
@@ -38,8 +38,8 @@ class PointHandler {
     return this.points.geometry.attributes.position
   }
 
-  setPoint(i: number, v: Vec) {
-    this.position.setXYZ(i, v.x, v.y, v.z)
+  setPoint(i: number, x: number, y: number, z: number) {
+    this.position.setXYZ(i, x, y, z)
   }
 
   setColor(color: number) {
