@@ -3,13 +3,13 @@ import App from './app'
 import { GUI } from 'lil-gui';
 
 const params = {
-  num_points: 1500,
+  num_points: 100,
   time_scale: 1,
 
   point_scale: 0.2,
   point_color: 0xffffff,
 
-  trail_length: 100,
+  trail_length: 300,
   trail_scale: 0.1,
   trail_color: 0xffffff,
 
@@ -29,6 +29,10 @@ let app = new App(element, params);
 const gui = new GUI()
 
 gui.onChange(event => {
+  if(event.property == "num_points") {
+    reset()
+    return
+  }
   console.log(event);
 
   app.onParams(event.property as keyof Params, event.value)
@@ -36,6 +40,7 @@ gui.onChange(event => {
 
 gui.add(params, "time_scale", 0, 10)
 gui.add(params, "num_points")
+gui.add(params, "point_scale", 0, 1)
 
 let trail = gui.addFolder("Trail")
 

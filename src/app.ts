@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { LineHandler } from './handlers/lines';
 import PointHandler from './handlers/points';
-import TrailHandler from './handlers/trails';
 import { Params } from './main';
 
 
@@ -13,9 +13,10 @@ class App {
   controls: OrbitControls
   renderer: THREE.WebGLRenderer
   clock: THREE.Clock
+  after_pause = false
 
   pointHandler: PointHandler
-  trailHandler: TrailHandler
+  lineHandler: LineHandler
 
   trail_iterator = 0
 
@@ -39,54 +40,47 @@ class App {
     elem.appendChild(this.renderer.domElement)
 
     this.pointHandler = new PointHandler(this.scene, initial)
-    this.trailHandler = new TrailHandler(this.scene, initial)
+    this.lineHandler = new LineHandler(this.scene, initial)
 
-    window.onfocus = () => this.clock.start()
-    window.onblur = () => this.clock.stop()
+    window.onfocus = () => this.after_pause = true
   }
 
   update() {
-    if (!this.params.time_scale || !this.clock.running) {
+    if (!this.params.time_scale) {
       return
+    }
+    if (this.after_pause) {
+      this.clock.getDelta()
+      this.after_pause = false
+      this.update()
     }
     // time between frames, usually small like 0.002
     const dt = this.clock.getDelta() / 5 * (this.params.time_scale)
 
     const { sigma, rho, beta } = this.params.vars
     const positions = this.pointHandler.position
-    // loop through every point
+
     for (let i = 0; i < positions.count; i++) {
-      let x = positions.getX(i)
-      let y = positions.getY(i)
-      let z = positions.getZ(i)
+      let x0 = positions.getX(i)
+      let y0 = positions.getY(i)
+      let z0 = positions.getZ(i)
 
-      let dx = sigma * (y - x)
-      let dy = x * (rho - z) - y
-      let dz = x * y - beta * z
+      let x1 = x0 + (sigma * (y0 - x0)) * dt
+      let y1 = y0 + (x0 * (rho - z0) - y0) * dt
+      let z1 = z0 + (x0 * y0 - beta * z0) * dt
 
-      x += dx * dt
-      y += dy * dt
-      z += dz * dt
+      this.pointHandler.setPoint(i, x1, y1, z1)
 
-      this.pointHandler.setPoint(i, x, y, z)
 
-      // if trail enabled
-      if (this.params.trail_length! > 0) {
-        // set current point to trail
-        this.trailHandler.setPoint(this.trail_iterator, x, y, z)
-        // this is incremented every frame * num_points
-        this.trail_iterator++
-
-        this.trail_iterator %= this.params.num_points * this.params.trail_length
+      if (this.trail_iterator % (i + 2) == 0) {
+        this.lineHandler.drawLine(x0, y0, z0, x1, y1, z1)
       }
+
     }
 
-    this.pointHandler.requestUpdate()
-    if (this.params.trail_length! > 0) {
-      // only update trail if necessary
-      this.trailHandler.update()
-    }
+    this.pointHandler.update()
 
+    this.lineHandler.update()
     this.controls.update()
     this.renderer.render(this.scene, this.camera)
   }
@@ -101,15 +95,14 @@ class App {
       case "point_scale":
         this.pointHandler.setSize(value)
         break
-      case "time_scale":
-        break
       case "trail_color":
-        this.trailHandler.setValue({ color: value })
+        // this.lineHandler.setValue({ color: value })
         break
       case "trail_length":
-        throw "TODO"
+        this.lineHandler.dispose(this.scene)
+        this.lineHandler = new LineHandler(this.scene, this.params)
       case "trail_scale":
-        this.trailHandler.setValue({ size: value })
+        // this.lineHandler.setValue({ size: value })
         break
     }
   }

@@ -10,7 +10,7 @@ class PointHandler {
     let multip = 40
     let offset = 10
 
-    let r = () => Math.random()
+    let r = Math.random
     /// returns 3 randomly generated numbers
     let generatePosition = () => {
       return [r() * multip - offset, r() * multip - offset, r() * multip - offset]
@@ -23,8 +23,8 @@ class PointHandler {
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
 
     const material = new THREE.PointsMaterial({
-      size: params.point_scale!,
-      color: params.point_color!,
+      size: params.point_scale,
+      color: params.point_color,
       depthTest: false,
     })
 
@@ -50,7 +50,7 @@ class PointHandler {
     (this.points.material as THREE.PointsMaterial).setValues({ size: size })
   }
 
-  requestUpdate() {
+  update() {
     this.position.needsUpdate = true
   }
 }
