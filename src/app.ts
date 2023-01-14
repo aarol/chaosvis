@@ -1,12 +1,12 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { LineHandler } from './handlers/lines';
-import PointHandler from './handlers/points';
+import PointHandler, { generatePoints } from './handlers/points';
 import { Params } from './main';
 
 
 
-class App {
+export default class App {
   params: Params
   scene: THREE.Scene
   camera: THREE.PerspectiveCamera
@@ -39,11 +39,15 @@ class App {
 
     elem.appendChild(this.renderer.domElement)
 
-    this.pointHandler = new PointHandler(this.scene, initial)
-    this.lineHandler = new LineHandler(this.scene, initial)
+    let points = generatePoints(this.params.num_points)
+
+    this.pointHandler = new PointHandler(this.scene, points, initial)
+    this.lineHandler = new LineHandler(this.scene, points, initial)
 
     window.onfocus = () => this.after_pause = true
   }
+
+  trail_groups = 5
 
   update() {
     if (this.params.time_scale) {
@@ -53,6 +57,7 @@ class App {
         this.after_pause = false
         this.update()
       }
+
       // time between frames, usually small like 0.002
       const dt = this.clock.getDelta() / 5 * (this.params.time_scale)
 
@@ -70,10 +75,12 @@ class App {
 
         this.pointHandler.setPoint(i, x1, y1, z1)
 
-        if (this.trail_iterator % (i + 2) == 0) {
-          this.lineHandler.drawLine(x0, y0, z0, x1, y1, z1)
+        if (i % 3 == this.trail_groups) {
+          this.lineHandler.drawLine(i, x1, y1, z1)
         }
       }
+      this.trail_groups++
+      this.trail_groups %= 3
     }
 
     this.pointHandler.update()
@@ -85,8 +92,6 @@ class App {
 
   onParams(key: keyof Params, value: number) {
     switch (key) {
-      case "num_points":
-        throw "TODO"
       case "point_color":
         this.pointHandler.setColor(value)
         break
@@ -98,7 +103,7 @@ class App {
         break
       case "trail_length":
         this.lineHandler.dispose(this.scene)
-        this.lineHandler = new LineHandler(this.scene, this.params)
+        this.lineHandler = new LineHandler(this.scene, [], this.params)
       case "trail_scale":
         // this.lineHandler.setValue({ size: value })
         break
@@ -119,5 +124,3 @@ class App {
     this.clock.stop()
   }
 }
-
-export default App

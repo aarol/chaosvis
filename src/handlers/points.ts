@@ -4,23 +4,10 @@ import { Params } from '../main'
 class PointHandler {
   points: THREE.Points
 
-  constructor(scene: THREE.Scene, params: Params) {
-
-    let verts = []
-    let multip = 40
-    let offset = 10
-
-    let r = Math.random
-    /// returns 3 randomly generated numbers
-    let generatePosition = () => {
-      return [r() * multip - offset, r() * multip - offset, r() * multip - offset]
-    }
-    for (let i = 0; i < params.num_points!; i++) {
-      verts.push(...generatePosition())
-    }
+  constructor(scene: THREE.Scene, points: Array<number>, params: Params) {
 
     const geometry = new THREE.BufferGeometry()
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3))
 
     const material = new THREE.PointsMaterial({
       size: params.point_scale,
@@ -56,3 +43,19 @@ class PointHandler {
 }
 
 export default PointHandler
+
+export function generatePoints(count: number) {
+  let verts = []
+  let multip = 40
+  let offset = 10
+
+  let r = Math.random
+  /// returns 3 randomly generated numbers
+  let generatePosition = () => {
+    return [r() * multip - offset, r() * multip - offset, r() * multip - offset]
+  }
+  for (let i = 0; i < count; i++) {
+    verts.push(...generatePosition())
+  }
+  return verts
+}

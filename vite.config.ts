@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
 
-export default (_: any, mode: string) => defineConfig({
+export default defineConfig({
   base: '/chaosvis/'
 })

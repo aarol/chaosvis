@@ -9,7 +9,7 @@ const params = {
   point_scale: 0.2,
   point_color: 0xffffff,
 
-  trail_length: 300,
+  trail_length: 200,
   trail_scale: 0.1,
   trail_color: 0xffffff,
 
@@ -41,6 +41,7 @@ gui.onChange(event => {
 gui.add(params, "time_scale", 0, 10)
 gui.add(params, "num_points")
 gui.add(params, "point_scale", 0, 1)
+gui.addColor(params, "point_color")
 
 let trail = gui.addFolder("Trail")
 
